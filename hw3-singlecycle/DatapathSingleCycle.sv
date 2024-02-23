@@ -24,8 +24,6 @@ module RegFile (
   localparam int NumRegs = 32;
   logic [`REG_SIZE] regs[NumRegs];  // logic [31:0] regs[32];
 
-  // TODO: your code here
-
   assign regs[0] = 32'd0;
 
   always_ff @(posedge clk) begin
@@ -217,7 +215,6 @@ module DatapathSingleCycle (
   logic [`REG_SIZE] rs2_data;
   
   RegFile rf (.rd(rd), .rd_data(rd_data), .rs1(rs1), .rs1_data(rs1_data), .rs2(rs2), .rs2_data(rs2_data), .clk(clk), .we(we), .rst(rst));
-  
 
   logic [31:0] cla_a, cla_b, cla_sum;
   logic cin;
@@ -228,14 +225,14 @@ module DatapathSingleCycle (
     halt = 0;
 
     rd = insn_rd;
-    rd_data = 0;
+    rd_data = 32'b0;
     rs1 = insn_rs1;
     rs2 = insn_rs2;
     we = 0;
     pcNext = pcCurrent + 4;
 
-    cla_a = 0;
-    cla_b = 0;
+    cla_a = 32'b0;
+    cla_b = 32'b0;
     cin = 0;
 
     case (insn_opcode)
@@ -248,18 +245,18 @@ module DatapathSingleCycle (
         end
       end
 
-      OpBranch: begin
-        if (insn_beq && insn_rs1 == insn_rs2) begin
+      OpBranch: begin       
+        if (insn_beq && rs1_data == rs2_data) begin
           pcNext = pcCurrent + imm_b_sext;
-        end else if (insn_bne && insn_rs1 != insn_rs2) begin
+        end else if (insn_bne && rs1_data != rs2_data) begin
           pcNext = pcCurrent + imm_b_sext;
-        end else if (insn_blt && insn_rs1 < $signed(insn_rs2)) begin
+        end else if (insn_blt && $signed(rs1_data) < $signed(rs2_data)) begin
           pcNext = pcCurrent + imm_b_sext;
-        end else if (insn_bge && insn_rs1 >= $signed(insn_rs2)) begin
+        end else if (insn_bge && $signed(rs1_data) >= $signed(rs2_data)) begin
           pcNext = pcCurrent + imm_b_sext;
-        end else if (insn_bltu && insn_rs1 < $unsigned(insn_rs2)) begin
+        end else if (insn_bltu && rs1_data < rs2_data) begin
           pcNext = pcCurrent + imm_b_sext;
-        end else if (insn_bgeu && insn_rs1 >= $unsigned(insn_rs2)) begin
+        end else if (insn_bgeu && rs1_data >= rs2_data) begin
           pcNext = pcCurrent + imm_b_sext;
         end else begin
           illegal_insn = 1'b1;
