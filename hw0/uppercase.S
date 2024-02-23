@@ -1,4 +1,4 @@
-.section .data
+  .section .data
 input_string:   .asciz "The @quick #Brown-Fox, jumped over the91 lazy dog!"
 
         # tohost/fromhost are data locations used by Spike
@@ -48,3 +48,4 @@ ret_check_char:
 end_program:
         # jump here when you're done
         j end_program
+
